@@ -10,20 +10,18 @@ export default function ProductCard({ product }) {
   return (
     <div className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden hover:shadow-xl transition-all duration-200 flex flex-col justify-between">
       <div>
-        <Link to={`/product/${product._id}`} className="block relative bg-slate-50 dark:bg-slate-800 overflow-hidden">
+        {/* Strictly Only Product Image Container */}
+        <Link to={`/product/${product._id}`} className="block relative bg-white dark:bg-slate-800 overflow-hidden">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full aspect-square object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+            className="w-full aspect-square object-contain p-4 group-hover:scale-105 transition-transform duration-300"
           />
-          <span className="absolute top-2 right-2 bg-slate-900/80 backdrop-blur-md text-white text-[10px] uppercase font-bold rounded-full px-2.5 py-1">
-            {product.category}
-          </span>
         </Link>
 
         <div className="p-4">
           <Link to={`/product/${product._id}`}>
-            <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm line-clamp-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+            <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm line-clamp-1 hover:text-indigo-600 transition">
               {product.name}
             </h3>
           </Link>

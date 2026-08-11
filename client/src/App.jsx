@@ -21,12 +21,30 @@ export default function App() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchProducts(search);
+      
+      // Checking safe response type
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else if (data && Array.isArray(data.products)) {
+        setProducts(data.products);
+      } else {
+        setProducts([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch products from backend:', err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchProducts()
-      .then((data) => setProducts(data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
+    loadProducts();
+  }, [search]);
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-slate-50 dark:bg-slate-950 transition-colors">
@@ -37,7 +55,9 @@ export default function App() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 text-indigo-600">
             <Loader2 className="w-10 h-10 animate-spin mb-3" />
-            <p className="text-slate-600 dark:text-slate-400 text-sm font-semibold">Loading Store...</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm font-semibold">
+              Loading Products...
+            </p>
           </div>
         ) : (
           <Routes>

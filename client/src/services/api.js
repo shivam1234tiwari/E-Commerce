@@ -1,41 +1,73 @@
 import axios from 'axios';
 
+// Base URL pointing to Node.js / Express Server
 const API = axios.create({
-  baseURL: 'https://dummyjson.com',
+  baseURL: 'http://localhost:5000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Fetch up to 300 products from DummyJSON
-export const fetchProducts = async () => {
-  const { data } = await API.get('/products?limit=300');
-  
-  // Normalize DummyJSON product schema to fit the UI
-  return data.products.map((item) => ({
-    _id: item.id.toString(),
-    name: item.title,
-    price: item.price,
-    category: item.category,
-    image: item.thumbnail || item.images?.[0],
-    description: item.description,
-    rating: item.rating || 4.5,
-    stock: item.stock,
-    brand: item.brand || 'Generic',
-  }));
+// Request Interceptor: Attach JWT token from localStorage to headers
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// --- PRODUCT API CALLS ---
+export const fetchProducts = async (keyword = '', pageNumber = 1) => {
+  const { data } = await API.get(`/products?keyword=${keyword}&pageNumber=${pageNumber}`);
+  return data;
 };
 
-// Fetch single product details by ID
 export const fetchProductById = async (id) => {
   const { data } = await API.get(`/products/${id}`);
-  return {
-    _id: data.id.toString(),
-    name: data.title,
-    price: data.price,
-    category: data.category,
-    image: data.thumbnail || data.images?.[0],
-    description: data.description,
-    rating: data.rating || 4.5,
-    stock: data.stock,
-    brand: data.brand || 'Generic',
-  };
+  return data;
+};
+
+export const createProductApi = async (productData) => {
+  const { data } = await API.post('/products', productData);
+  return data;
+};
+
+export const deleteProductApi = async (id) => {
+  const { data } = await API.delete(`/products/${id}`);
+  return data;
+};
+
+// --- AUTH API CALLS ---
+export const loginApi = async (credentials) => {
+  const { data } = await API.post('/auth/login', credentials);
+  return data;
+};
+
+export const registerApi = async (userData) => {
+  const { data } = await API.post('/auth/register', userData);
+  return data;
+};
+
+export const googleLoginApi = async (googleToken) => {
+  const { data } = await API.post('/auth/google', { token: googleToken });
+  return data;
+};
+
+export const getUserProfileApi = async () => {
+  const { data } = await API.get('/auth/profile');
+  return data;
+};
+
+// --- ORDER API CALLS ---
+export const createOrderApi = async (orderData) => {
+  const { data } = await API.post('/orders', orderData);
+  return data;
+};
+
+export const getMyOrdersApi = async () => {
+  const { data } = await API.get('/orders/myorders');
+  return data;
 };
 
 export default API;
