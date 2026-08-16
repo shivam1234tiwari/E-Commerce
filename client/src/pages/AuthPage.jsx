@@ -21,71 +21,86 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
 
-  // Handle Login & Register submission
+  // 1. Handle Login & Register (Send OTP)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setMessage('');
     setLoading(true);
 
+    const cleanEmail = email.trim().toLowerCase();
+
     try {
       if (isLogin) {
-        // 1. Direct Login -> /api/auth/login
-        const { data } = await API.post('/auth/login', { 
-          email: email.trim().toLowerCase(), 
-          password 
+        // Direct Login -> /api/auth/login
+        const { data } = await API.post('/auth/login', {
+          email: cleanEmail,
+          password,
         });
+
         localStorage.setItem('userInfo', JSON.stringify(data));
         setUser(data);
         navigate(data.isAdmin ? '/admin' : '/');
       } else {
-        // 2. Register & Trigger OTP -> /api/auth/register
-        const { data } = await API.post('/auth/register', { 
-          name, 
-          email: email.trim().toLowerCase(), 
-          password 
+        // Register & Send Real OTP -> /api/auth/register
+        const { data } = await API.post('/auth/register', {
+          name: name.trim(),
+          email: cleanEmail,
+          password,
         });
-        setMessage(data.message || 'OTP has been sent to your email!');
+
+        setMessage(data.message || 'OTP sent to your email address!');
         setStep('otp');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Authentication failed');
+      setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 3. Verify OTP -> /api/auth/verify-otp
+  // 2. Handle OTP Verification
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     setLoading(true);
 
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanOtp = otp.trim();
+
+    if (!cleanOtp || cleanOtp.length < 6) {
+      setError('Please enter the full 6-digit OTP code.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { data } = await API.post('/auth/verify-otp', { 
-        email: email.trim().toLowerCase(), 
-        otp: otp.trim() 
+      const { data } = await API.post('/auth/verify-otp', {
+        email: cleanEmail,
+        otp: cleanOtp,
       });
+
       localStorage.setItem('userInfo', JSON.stringify(data));
       setUser(data);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid or expired OTP');
+      setError(err.response?.data?.message || 'Invalid or expired OTP code.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 4. Google Auth -> /api/auth/google
+  // 3. Google OAuth Login
   const handleGoogleAuth = async () => {
     try {
       setLoading(true);
       setError('');
-      
+
       const { data } = await API.post('/auth/google', {
         mockUser: {
-          name: 'Google Verified User',
-          email: 'google.user@gmail.com',
+          name: 'Google Verified Shopper',
+          email: 'google.shopper@gmail.com',
           avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300',
         },
       });
@@ -117,10 +132,11 @@ export default function AuthPage() {
               ? `Enter the 6-digit code sent to ${email}`
               : isLogin
               ? 'Enter your credentials to continue shopping'
-              : 'Join ShopPulse for exclusive deals and fastest checkout'}
+              : 'Join ShopPulse for exclusive deals and express checkout'}
           </p>
         </div>
 
+        {/* Alert Messages */}
         {error && (
           <div className="p-3.5 mb-4 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100">
             {error}
@@ -134,7 +150,7 @@ export default function AuthPage() {
 
         {step === 'auth' ? (
           <div className="space-y-4">
-            {/* Google Login Button */}
+            {/* Google Login */}
             <button
               onClick={handleGoogleAuth}
               type="button"
@@ -156,6 +172,7 @@ export default function AuthPage() {
               <div className="grow h-px bg-slate-200 dark:bg-slate-800"></div>
             </div>
 
+            {/* Email / Password Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <div>
@@ -185,7 +202,7 @@ export default function AuthPage() {
                   <input
                     type="email"
                     required
-                    placeholder="admin@shoppulse.com"
+                    placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white"
@@ -252,7 +269,7 @@ export default function AuthPage() {
                   type="text"
                   maxLength={6}
                   required
-                  placeholder="Enter 6-digit code"
+                  placeholder="••••••"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center tracking-widest text-base font-black outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white"
@@ -271,7 +288,11 @@ export default function AuthPage() {
             <div className="text-center">
               <button
                 type="button"
-                onClick={() => setStep('auth')}
+                onClick={() => {
+                  setStep('auth');
+                  setError('');
+                  setMessage('');
+                }}
                 className="text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 ← Back to Login

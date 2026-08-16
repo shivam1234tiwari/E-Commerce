@@ -7,13 +7,14 @@ const sendEmail = require('../utils/sendEmail');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+// Helper function to generate JWT Token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'secretkey123', {
     expiresIn: '30d',
   });
 };
 
-// @desc    Register user & Save OTP to MongoDB
+// @desc    Register a new user & Send Real OTP via Email
 // @route   POST /api/auth/register
 const registerUser = async (req, res) => {
   try {
@@ -21,99 +22,106 @@ const registerUser = async (req, res) => {
     const cleanEmail = email ? email.toLowerCase().trim() : '';
 
     if (!name || !cleanEmail || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return res.status(400).json({ message: 'Please provide all required fields' });
     }
 
     const userExists = await User.findOne({ email: cleanEmail });
     if (userExists && userExists.isVerified) {
-      return res.status(400).json({ message: 'An account with this email already exists and is verified' });
+      return res.status(400).json({ message: 'An account with this email already exists' });
     }
 
-    // Generate 6-Digit OTP & 15 minutes validity
+    // Generate 6-Digit Real OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = new Date(Date.now() + 15 * 60 * 1000);
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // Valid for 15 minutes
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Direct update/upsert to guarantee OTP is saved in database
+    // Save/Update user with OTP in DB
     await User.findOneAndUpdate(
       { email: cleanEmail },
       {
         name,
         email: cleanEmail,
         password: hashedPassword,
-        otp: otp,
-        otpExpires: otpExpires,
+        otp,
+        otpExpires,
         isVerified: false,
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
-    console.log(`✅ Stored OTP in DB for ${cleanEmail}: ${otp}`);
+    console.log(`🔑 OTP generated for ${cleanEmail}: ${otp}`);
 
-    // Try sending email (if SMTP fails, it won't crash)
+    // Dispatch Email via Nodemailer
     try {
-      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        await sendEmail({
-          email: cleanEmail,
-          subject: 'SHOPPULSE - Email Verification OTP',
-          html: `
-            <div style="font-family: Arial, sans-serif; padding: 20px;">
-              <h2>Welcome to SHOPPULSE, ${name}!</h2>
-              <p>Your verification OTP is:</p>
-              <h1 style="color: #4F46E5; letter-spacing: 4px;">${otp}</h1>
-              <p>Valid for 15 minutes.</p>
+      await sendEmail({
+        email: cleanEmail,
+        subject: 'SHOPPULSE - Email Verification Code',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 25px; border: 1px solid #eaeaea; border-radius: 16px;">
+            <h2 style="color: #4F46E5; margin-bottom: 8px;">Welcome to SHOPPULSE, ${name}!</h2>
+            <p style="color: #666; font-size: 14px;">Your 6-digit email verification security code is:</p>
+            <div style="background: #F3F4F6; padding: 15px; text-align: center; border-radius: 12px; margin: 20px 0;">
+              <span style="font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #1E293B;">${otp}</span>
             </div>
-          `,
-        });
-      }
-    } catch (e) {
-      console.warn('SMTP delivery warning:', e.message);
-    }
+            <p style="color: #999; font-size: 12px;">This code will expire in 15 minutes. If you did not request this, please ignore this email.</p>
+          </div>
+        `,
+      });
 
-    return res.status(200).json({
-      message: 'Verification OTP has been sent to your email!',
-      email: cleanEmail,
-    });
+      return res.status(200).json({
+        message: 'A 6-digit verification code has been sent to your email address.',
+        email: cleanEmail,
+      });
+    } catch (emailError) {
+      console.error('❌ Nodemailer Error:', emailError);
+      return res.status(500).json({
+        message: 'Could not send verification email. Please verify your Gmail App Password credentials.',
+      });
+    }
   } catch (error) {
     console.error('Registration Error:', error);
     res.status(500).json({ message: 'Server Error: ' + error.message });
   }
 };
 
-// @desc    Verify OTP and activate account
+// @desc    Verify Real OTP & Activate User
 // @route   POST /api/auth/verify-otp
 const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const cleanEmail = email ? email.toLowerCase().trim() : '';
+    const cleanEmail = email ? String(email).toLowerCase().trim() : '';
     const cleanOtp = otp ? String(otp).trim() : '';
+
+    if (!cleanEmail || !cleanOtp) {
+      return res.status(400).json({ message: 'Email and OTP are required fields' });
+    }
 
     const user = await User.findOne({ email: cleanEmail });
     if (!user) {
       return res.status(404).json({ message: 'User account not found' });
     }
 
-    console.log(`🔍 Verifying for ${cleanEmail} -> DB OTP: [${user.otp}], Entered OTP: [${cleanOtp}]`);
+    const dbOtp = user.otp ? String(user.otp).trim() : null;
+    const isExpired = user.otpExpires ? new Date(user.otpExpires).getTime() < Date.now() : true;
 
-    // Check if OTP matches
-    if (!user.otp || String(user.otp).trim() !== cleanOtp) {
+    // Strict validation
+    if (!dbOtp || dbOtp !== cleanOtp) {
       return res.status(400).json({ message: 'Invalid OTP code. Please enter the correct code.' });
     }
 
-    // Check if Expired
-    if (user.otpExpires && new Date(user.otpExpires).getTime() < Date.now()) {
-      return res.status(400).json({ message: 'OTP has expired. Please sign up again to get a new code.' });
+    if (isExpired) {
+      return res.status(400).json({ message: 'OTP has expired. Please request a new code.' });
     }
 
-    // Mark as Verified & Clear OTP
+    // Activate Account & Clear OTP
     user.isVerified = true;
-    user.otp = undefined;
-    user.otpExpires = undefined;
+    user.otp = null;
+    user.otpExpires = null;
     await user.save();
 
-    console.log(`🎉 User ${cleanEmail} verified successfully!`);
+    console.log(`✅ User verified: ${cleanEmail}`);
 
     res.status(200).json({
       _id: user._id,
@@ -130,7 +138,7 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-// @desc    Login
+// @desc    Authenticate user & get JWT token
 // @route   POST /api/auth/login
 const loginUser = async (req, res) => {
   try {
@@ -138,12 +146,15 @@ const loginUser = async (req, res) => {
     const cleanEmail = email ? email.toLowerCase().trim() : '';
 
     const user = await User.findOne({ email: cleanEmail });
+
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     let isMatch = false;
-    if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$')) {
+    if (user.matchPassword && typeof user.matchPassword === 'function') {
+      isMatch = await user.matchPassword(password);
+    } else if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$')) {
       isMatch = await bcrypt.compare(password, user.password);
     } else {
       isMatch = user.password === password;
@@ -171,7 +182,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Google OAuth
+// @desc    Google OAuth Login / Auto-Register
 // @route   POST /api/auth/google
 const googleLogin = async (req, res) => {
   try {
@@ -216,11 +227,11 @@ const googleLogin = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-    res.status(400).json({ message: 'Google Auth Error: ' + error.message });
+    res.status(400).json({ message: 'Google Authentication Failed: ' + error.message });
   }
 };
 
-// @desc    Get Profile
+// @desc    Get logged in user profile
 // @route   GET /api/auth/profile
 const getUserProfile = async (req, res) => {
   try {
