@@ -1,0 +1,737 @@
+[
+  {
+    "name": "Apple iPhone 15 Pro Max (256 GB) - Black Titanium",
+    "brand": "Apple",
+    "category": "Electronics",
+    "price": 134900,
+    "rating": 4.8,
+    "countInStock": 25,
+    "image": "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600",
+    "description": "Titanium design with A17 Pro chip, customizable Action button, and 48MP camera system."
+  },
+  {
+    "name": "Samsung Galaxy S24 Ultra 5G (Titanium Gray)",
+    "brand": "Samsung",
+    "category": "Electronics",
+    "price": 129999,
+    "rating": 4.7,
+    "countInStock": 18,
+    "image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600",
+    "description": "Built-in S Pen, Galaxy AI integration, and 200MP camera with Quad Telephoto zoom."
+  },
+  {
+    "name": "Apple MacBook Air M3 Chip (16GB RAM, 512GB SSD)",
+    "brand": "Apple",
+    "category": "Electronics",
+    "price": 114900,
+    "rating": 4.9,
+    "countInStock": 12,
+    "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600",
+    "description": "Supercharged by the M3 chip with up to 18 hours of battery life and Liquid Retina display."
+  },
+  {
+    "name": "Sony WH-1000XM5 Wireless Noise Canceling Headphones",
+    "brand": "Sony",
+    "category": "Electronics",
+    "price": 26990,
+    "rating": 4.8,
+    "countInStock": 40,
+    "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600",
+    "description": "Industry-leading noise cancellation with 8 microphones and 30-hour battery life."
+  },
+  {
+    "name": "Apple Watch Series 9 GPS 45mm Midnight Aluminum",
+    "brand": "Apple",
+    "category": "Electronics",
+    "price": 41900,
+    "rating": 4.6,
+    "countInStock": 22,
+    "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600",
+    "description": "S9 SiP chip with Double Tap gesture control and advanced health sensors."
+  },
+  {
+    "name": "Dell XPS 13 Plus Intel Core i7 Touchscreen Laptop",
+    "brand": "Dell",
+    "category": "Electronics",
+    "price": 145990,
+    "rating": 4.5,
+    "countInStock": 10,
+    "image": "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600",
+    "description": "Minimalist zero-lattice keyboard with capacitive touch function row and 3.5K OLED screen."
+  },
+  {
+    "name": "Keychron K2 Mechanical RGB Gaming Keyboard",
+    "brand": "Keychron",
+    "category": "Electronics",
+    "price": 7499,
+    "rating": 4.7,
+    "countInStock": 35,
+    "image": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600",
+    "description": "Wireless Bluetooth 5.1 & USB-C wired mechanical keyboard compatible with Mac and Windows."
+  },
+  {
+    "name": "Logitech MX Master 3S Performance Wireless Mouse",
+    "brand": "Logitech",
+    "category": "Electronics",
+    "price": 8995,
+    "rating": 4.9,
+    "countInStock": 50,
+    "image": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600",
+    "description": "Quiet clicks with 8000 DPI sensor tracking on any surface including glass."
+  },
+  {
+    "name": "Apple iPad Air 11-inch M2 Chip (Wi-Fi, 128GB)",
+    "brand": "Apple",
+    "category": "Electronics",
+    "price": 59900,
+    "rating": 4.8,
+    "countInStock": 30,
+    "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600",
+    "description": "Liquid Retina display with P3 wide color and Apple Pencil Pro support."
+  },
+  {
+    "name": "JBL Flip 6 Portable Waterproof Bluetooth Speaker",
+    "brand": "JBL",
+    "category": "Electronics",
+    "price": 9999,
+    "rating": 4.6,
+    "countInStock": 45,
+    "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600",
+    "description": "IP67 waterproof and dustproof design with 2-way speaker system and 12-hour playtime."
+  },
+  {
+    "name": "Samsung 32-inch 4K Curved UHD Gaming Monitor",
+    "brand": "Samsung",
+    "category": "Electronics",
+    "price": 28999,
+    "rating": 4.5,
+    "countInStock": 16,
+    "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600",
+    "description": "1500R curvature for immersive visuals with HDR10 support and AMD FreeSync."
+  },
+  {
+    "name": "Apple AirPods Pro (2nd Gen) with MagSafe USB-C",
+    "brand": "Apple",
+    "category": "Electronics",
+    "price": 21900,
+    "rating": 4.8,
+    "countInStock": 55,
+    "image": "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=600",
+    "description": "H2 chip powered active noise cancellation and personalized spatial audio."
+  },
+  {
+    "name": "OnePlus 12 5G (Silky Black, 16GB RAM, 512GB)",
+    "brand": "OnePlus",
+    "category": "Electronics",
+    "price": 64999,
+    "rating": 4.7,
+    "countInStock": 20,
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600",
+    "description": "Snapdragon 8 Gen 3 processor with 4th Gen Hasselblad Camera system."
+  },
+  {
+    "name": "Bose QuietComfort 45 Over-Ear Headphones",
+    "brand": "Bose",
+    "category": "Electronics",
+    "price": 24990,
+    "rating": 4.7,
+    "countInStock": 28,
+    "image": "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600",
+    "description": "High-fidelity audio with proprietary acoustic noise cancelling technology."
+  },
+  {
+    "name": "Asus ROG Strix G16 Gaming Laptop (RTX 4060)",
+    "brand": "Asus",
+    "category": "Electronics",
+    "price": 119990,
+    "rating": 4.6,
+    "countInStock": 14,
+    "image": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600",
+    "description": "13th Gen Intel Core i7-13650HX with ROG Intelligent Cooling and 165Hz FHD display."
+  },
+  {
+    "name": "GoPro HERO12 Black Action Camera",
+    "brand": "GoPro",
+    "category": "Electronics",
+    "price": 37990,
+    "rating": 4.7,
+    "countInStock": 24,
+    "image": "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=600",
+    "description": "5.3K video recording with HyperSmooth 6.0 video stabilization and HDR."
+  },
+  {
+    "name": "SanDisk 1TB Extreme Portable External SSD",
+    "brand": "SanDisk",
+    "category": "Electronics",
+    "price": 8499,
+    "rating": 4.8,
+    "countInStock": 60,
+    "image": "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=600",
+    "description": "Rugged drop protection up to 3 meters with IP65 water and dust resistance."
+  },
+  {
+    "name": "Anker 735 65W GaN Fast Charger 3-Port",
+    "brand": "Anker",
+    "category": "Electronics",
+    "price": 3499,
+    "rating": 4.6,
+    "countInStock": 70,
+    "image": "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600",
+    "description": "GaNPrime high-speed charging for phones, tablets, and USB-C laptops simultaneously."
+  },
+  {
+    "name": "Amazon Kindle Paperwhite 16GB 6.8-inch Display",
+    "brand": "Amazon",
+    "category": "Electronics",
+    "price": 14999,
+    "rating": 4.9,
+    "countInStock": 35,
+    "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=600",
+    "description": "300 ppi glare-free display with adjustable warm light and waterproof chassis."
+  },
+  {
+    "name": "Fitbit Charge 6 Fitness Activity Tracker",
+    "brand": "Fitbit",
+    "category": "Electronics",
+    "price": 13999,
+    "rating": 4.4,
+    "countInStock": 40,
+    "image": "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600",
+    "description": "Built-in GPS with heart rate tracking, EDA sensor, and Google Maps integration."
+  },
+  {
+    "name": "HP Spectre x360 2-in-1 Touch Intel Evo Laptop",
+    "brand": "HP",
+    "category": "Electronics",
+    "price": 124990,
+    "rating": 4.6,
+    "countInStock": 15,
+    "image": "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600",
+    "description": "Gem-cut convertible design with 13.5-inch 3K2K OLED display and rechargeable tilt pen."
+  },
+
+  {
+    "name": "Levi's Men 511 Slim Fit Mid Rise Jeans",
+    "brand": "Levi's",
+    "category": "Fashion",
+    "price": 2499,
+    "rating": 4.5,
+    "countInStock": 60,
+    "image": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600",
+    "description": "Classic 5-pocket denim with stretch fabric for flexible everyday comfort."
+  },
+  {
+    "name": "Nike Air Jordan 1 Low Retro Sneakers",
+    "brand": "Nike",
+    "category": "Fashion",
+    "price": 8995,
+    "rating": 4.9,
+    "countInStock": 30,
+    "image": "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=600",
+    "description": "Iconic low-top silhouette with genuine leather upper and Nike Air cushioning."
+  },
+  {
+    "name": "Puma Men Solid Regular Fit Crew Neck T-Shirt",
+    "brand": "Puma",
+    "category": "Fashion",
+    "price": 799,
+    "rating": 4.3,
+    "countInStock": 80,
+    "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600",
+    "description": "100% breathable cotton basic crew neck t-shirt with signature Puma cat logo."
+  },
+  {
+    "name": "Adidas Originals Stan Smith Classic Sneakers",
+    "brand": "Adidas",
+    "category": "Fashion",
+    "price": 5999,
+    "rating": 4.7,
+    "countInStock": 45,
+    "image": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600",
+    "description": "Timeless tennis-inspired white leather shoes with perforated 3-Stripes."
+  },
+  {
+    "name": "Zara Faux Leather Asymmetric Biker Jacket",
+    "brand": "Zara",
+    "category": "Fashion",
+    "price": 4990,
+    "rating": 4.6,
+    "countInStock": 25,
+    "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600",
+    "description": "Asymmetrical front zipper jacket with notch lapels and metallic stud accents."
+  },
+  {
+    "name": "Nike Air Max 270 React Running Shoes",
+    "brand": "Nike",
+    "category": "Fashion",
+    "price": 7495,
+    "rating": 4.8,
+    "countInStock": 35,
+    "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600",
+    "description": "Max Air 270 unit delivers unmatched all-day comfort with lightweight foam midsole."
+  },
+  {
+    "name": "Puma Unisex Pioneer Water-Resistant Backpack",
+    "brand": "Puma",
+    "category": "Fashion",
+    "price": 1499,
+    "rating": 4.4,
+    "countInStock": 70,
+    "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600",
+    "description": "Spacious dual-compartment backpack with padded laptop sleeve and shoulder straps."
+  },
+  {
+    "name": "US Polo Assn Men Regular Fit Cotton Shirt",
+    "brand": "US Polo",
+    "category": "Fashion",
+    "price": 1699,
+    "rating": 4.5,
+    "countInStock": 50,
+    "image": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600",
+    "description": "Pure cotton solid long sleeve casual button-down shirt with chest embroidery."
+  },
+  {
+    "name": "Roadster Men Oversized Casual Graphic Tee",
+    "brand": "Roadster",
+    "category": "Fashion",
+    "price": 499,
+    "rating": 4.2,
+    "countInStock": 95,
+    "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600",
+    "description": "Drop-shoulder vintage wash streetwear t-shirt crafted from pure combed cotton."
+  },
+  {
+    "name": "HRX Active Gym Performance Track Pants",
+    "brand": "HRX",
+    "category": "Fashion",
+    "price": 899,
+    "rating": 4.4,
+    "countInStock": 65,
+    "image": "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=600",
+    "description": "Rapid Dry technology joggers with elasticated waistband and zippered pockets."
+  },
+  {
+    "name": "Tommy Hilfiger Genuine Leather Bifold Wallet",
+    "brand": "Tommy Hilfiger",
+    "category": "Fashion",
+    "price": 1899,
+    "rating": 4.7,
+    "countInStock": 40,
+    "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600",
+    "description": "Handcrafted full-grain leather wallet with multiple card slots and RFID protection."
+  },
+  {
+    "name": "Woodland Men Camel Brown Nubuck Leather Boots",
+    "brand": "Woodland",
+    "category": "Fashion",
+    "price": 3795,
+    "rating": 4.6,
+    "countInStock": 30,
+    "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600",
+    "description": "Heavy-duty outdoor high-ankle boots with shock-absorbing rubber lug sole."
+  },
+  {
+    "name": "H&M Relaxed Fit Heavyweight Cotton Hoodie",
+    "brand": "H&M",
+    "category": "Fashion",
+    "price": 1999,
+    "rating": 4.5,
+    "countInStock": 55,
+    "image": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600",
+    "description": "Soft fleece-lined hoodie with kangaroo front pocket and ribbed hem cuffs."
+  },
+  {
+    "name": "Fastrack Polarized Square Sunglasses for Men",
+    "brand": "Fastrack",
+    "category": "Fashion",
+    "price": 999,
+    "rating": 4.3,
+    "countInStock": 85,
+    "image": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600",
+    "description": "100% UV400 protected glare-reducing polarized lenses with sturdy matte frame."
+  },
+  {
+    "name": "Red Tape Men Casual Court Sneaker Shoes",
+    "brand": "Red Tape",
+    "category": "Fashion",
+    "price": 1399,
+    "rating": 4.4,
+    "countInStock": 75,
+    "image": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600",
+    "description": "Perforated side panels with cushioned memory foam insole for all-day walking."
+  },
+  {
+    "name": "Titan Karishma Analog Stainless Steel Watch",
+    "brand": "Titan",
+    "category": "Fashion",
+    "price": 2395,
+    "rating": 4.7,
+    "countInStock": 45,
+    "image": "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600",
+    "description": "Classic champagne sunray dial with date display and silver stainless steel strap."
+  },
+
+  {
+    "name": "Dior Sauvage Eau De Parfum for Men (100ml)",
+    "brand": "Dior",
+    "category": "Fragrances",
+    "price": 9900,
+    "rating": 4.9,
+    "countInStock": 30,
+    "image": "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=600",
+    "description": "Calabrian bergamot and Sichuan pepper paired with a sensual Papua New Guinean vanilla."
+  },
+  {
+    "name": "Chanel No. 5 Luxury Eau De Parfum (100ml)",
+    "brand": "Chanel",
+    "category": "Fragrances",
+    "price": 12500,
+    "rating": 4.8,
+    "countInStock": 20,
+    "image": "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600",
+    "description": "The essence of femininity with floral aldehyde notes of May rose and jasmine."
+  },
+  {
+    "name": "Versace Eros Flame Eau De Parfum (100ml)",
+    "brand": "Versace",
+    "category": "Fragrances",
+    "price": 6800,
+    "rating": 4.7,
+    "countInStock": 35,
+    "image": "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=600",
+    "description": "Fiery citrus and spicy woody accords of Italian chinotto, black pepper, and cedar."
+  },
+  {
+    "name": "Bella Vita Organic Man Perfume Gift Set (4x20ml)",
+    "brand": "Bella Vita",
+    "category": "Fragrances",
+    "price": 599,
+    "rating": 4.2,
+    "countInStock": 100,
+    "image": "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600",
+    "description": "Pack of 4 long-lasting luxury fragrances: CEO Man, Impact, Dominus, and OUD."
+  },
+  {
+    "name": "The Man Company Blanc Long-Lasting Body Perfume",
+    "brand": "The Man Company",
+    "category": "Fragrances",
+    "price": 399,
+    "rating": 4.3,
+    "countInStock": 120,
+    "image": "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=600",
+    "description": "Refreshing lemon, lavender, and musk fragrance notes for daily office wear."
+  },
+  {
+    "name": "Skinn by Titan Raw Eau De Parfum for Men (100ml)",
+    "brand": "Titan Skinn",
+    "category": "Fragrances",
+    "price": 2495,
+    "rating": 4.6,
+    "countInStock": 50,
+    "image": "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?w=600",
+    "description": "Created by French master perfumers with crisp watery citrus and Indonesian patchouli."
+  },
+  {
+    "name": "Davidoff Cool Water Eau De Toilette (125ml)",
+    "brand": "Davidoff",
+    "category": "Fragrances",
+    "price": 3499,
+    "rating": 4.6,
+    "countInStock": 45,
+    "image": "https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=600",
+    "description": "The quintessential marine fragrance with peppermint, lavender, and oakmoss."
+  },
+  {
+    "name": "Fogg Scent Xtremo No Gas Long Lasting Perfume",
+    "brand": "Fogg",
+    "category": "Fragrances",
+    "price": 299,
+    "rating": 4.1,
+    "countInStock": 150,
+    "image": "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=600",
+    "description": "100% liquid perfume spray with no gas offering 800+ sprays per bottle."
+  },
+  {
+    "name": "Villain Snake Eau De Parfum for Men (100ml)",
+    "brand": "Villain",
+    "category": "Fragrances",
+    "price": 699,
+    "rating": 4.2,
+    "countInStock": 80,
+    "image": "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?w=600",
+    "description": "Mysterious earthy aroma infused with notes of mandarin, bergamot, and white musk."
+  },
+  {
+    "name": "Beardo Godfather Premium Perfume for Men (100ml)",
+    "brand": "Beardo",
+    "category": "Fragrances",
+    "price": 549,
+    "rating": 4.3,
+    "countInStock": 90,
+    "image": "https://images.unsplash.com/photo-1616949755610-8c9bbc08f138?w=600",
+    "description": "Alluring aromatic blend of mint, geranium, lemon, and vetiver."
+  },
+
+  {
+    "name": "The Ordinary Niacinamide 10% + Zinc 1% (30ml)",
+    "brand": "The Ordinary",
+    "category": "Beauty & Personal Care",
+    "price": 600,
+    "rating": 4.7,
+    "countInStock": 100,
+    "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600",
+    "description": "High-strength vitamin and mineral blemish formula that reduces skin blemishes and congestion."
+  },
+  {
+    "name": "L'Oreal Paris Revitalift 1.5% Hyaluronic Serum",
+    "brand": "L'Oreal",
+    "category": "Beauty & Personal Care",
+    "price": 799,
+    "rating": 4.6,
+    "countInStock": 80,
+    "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600",
+    "description": "Intensively hydrates, smooths, and replumps skin for instant radiant glow."
+  },
+  {
+    "name": "Minimalist 10% Vitamin C Serum for Glowing Skin",
+    "brand": "Minimalist",
+    "category": "Beauty & Personal Care",
+    "price": 664,
+    "rating": 4.7,
+    "countInStock": 90,
+    "image": "https://images.unsplash.com/photo-1608248597359-0027f311c6d3?w=600",
+    "description": "Formulated with Centella water to soothe skin while fading dark spots and hyperpigmentation."
+  },
+  {
+    "name": "CeraVe Hydrating Facial Cleanser (237ml)",
+    "brand": "CeraVe",
+    "category": "Beauty & Personal Care",
+    "price": 450,
+    "rating": 4.8,
+    "countInStock": 75,
+    "image": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600",
+    "description": "Contains 3 essential ceramides and hyaluronic acid to cleanse without stripping the barrier."
+  },
+  {
+    "name": "Neutrogena Hydro Boost Water Gel (50g)",
+    "brand": "Neutrogena",
+    "category": "Beauty & Personal Care",
+    "price": 890,
+    "rating": 4.6,
+    "countInStock": 65,
+    "image": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=600",
+    "description": "Oil-free face moisturizer with purified hyaluronic acid that absorbs instantly."
+  },
+  {
+    "name": "Derma Co 1% Hyaluronic Sunscreen Aqua Gel SPF 50",
+    "brand": "Derma Co",
+    "category": "Beauty & Personal Care",
+    "price": 449,
+    "rating": 4.5,
+    "countInStock": 110,
+    "image": "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=600",
+    "description": "Broad spectrum PA++++ protection with zero white cast and non-greasy finish."
+  },
+  {
+    "name": "Cetaphil Gentle Skin Cleanser Wash (125ml)",
+    "brand": "Cetaphil",
+    "category": "Beauty & Personal Care",
+    "price": 335,
+    "rating": 4.7,
+    "countInStock": 95,
+    "image": "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=600",
+    "description": "Dermatologist-tested soap-free hydrating formula ideal for sensitive skin."
+  },
+  {
+    "name": "Nivea Soft Light Moisturising Cream (200ml)",
+    "brand": "Nivea",
+    "category": "Beauty & Personal Care",
+    "price": 279,
+    "rating": 4.6,
+    "countInStock": 140,
+    "image": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600",
+    "description": "Enriched with Jojoba Oil and Vitamin E for fresh, soft, and supple skin."
+  },
+
+  {
+    "name": "Green Soul Monster Ultimate Gaming Chair",
+    "brand": "Green Soul",
+    "category": "Home & Kitchen",
+    "price": 16990,
+    "rating": 4.7,
+    "countInStock": 20,
+    "image": "https://images.unsplash.com/photo-1580481072645-022f9a6d83d0?w=600",
+    "description": "Ergonomic breathable spandex and PU leather chair with magnetic memory foam pillow."
+  },
+  {
+    "name": "Prestige Iris 750W Mixer Grinder with 4 Jars",
+    "brand": "Prestige",
+    "category": "Home & Kitchen",
+    "price": 2999,
+    "rating": 4.4,
+    "countInStock": 60,
+    "image": "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=600",
+    "description": "Heavy-duty 750W motor with 3 stainless steel jars and 1 transparent juicer jar."
+  },
+  {
+    "name": "Pigeon 1.5L Stainless Steel Electric Kettle",
+    "brand": "Pigeon",
+    "category": "Home & Kitchen",
+    "price": 549,
+    "rating": 4.3,
+    "countInStock": 110,
+    "image": "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=600",
+    "description": "Fast 1500W heating element with auto shut-off and boil-dry protection."
+  },
+  {
+    "name": "IKEA Modern Minimalist 3-Seater Sofa",
+    "brand": "IKEA",
+    "category": "Home & Kitchen",
+    "price": 24990,
+    "rating": 4.6,
+    "countInStock": 12,
+    "image": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600",
+    "description": "High-resilience foam seat cushions with removable and machine washable fabric covers."
+  },
+  {
+    "name": "Milton Thermosteel Flask (1000ml)",
+    "brand": "Milton",
+    "category": "Home & Kitchen",
+    "price": 899,
+    "rating": 4.7,
+    "countInStock": 80,
+    "image": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=600",
+    "description": "Vacuum-insulated stainless steel flask keeps beverages hot or cold for 24 hours."
+  },
+  {
+    "name": "Hawkins 3 Litre Hard Anodised Pressure Cooker",
+    "brand": "Hawkins",
+    "category": "Home & Kitchen",
+    "price": 1650,
+    "rating": 4.8,
+    "countInStock": 75,
+    "image": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600",
+    "description": "Hard-anodised non-reactive cooking body with inside-fitting safety pressure lid."
+  },
+  {
+    "name": "Philips Digital Air Fryer 4.1L (1400W)",
+    "brand": "Philips",
+    "category": "Home & Kitchen",
+    "price": 6999,
+    "rating": 4.7,
+    "countInStock": 35,
+    "image": "https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=600",
+    "description": "Rapid Air Technology fries food with up to 90% less fat with 7 preset touch menus."
+  },
+
+  {
+    "name": "Atomic Habits by James Clear (Hardcover)",
+    "brand": "Penguin",
+    "category": "Books & Stationery",
+    "price": 499,
+    "rating": 4.9,
+    "countInStock": 150,
+    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600",
+    "description": "An easy and proven way to build good habits and break bad ones."
+  },
+  {
+    "name": "The Psychology of Money by Morgan Housel",
+    "brand": "Jaico",
+    "category": "Books & Stationery",
+    "price": 299,
+    "rating": 4.8,
+    "countInStock": 130,
+    "image": "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=600",
+    "description": "Timeless lessons on wealth, greed, and happiness doing well with money."
+  },
+  {
+    "name": "Parker Vector Stainless Steel Fountain Pen",
+    "brand": "Parker",
+    "category": "Books & Stationery",
+    "price": 495,
+    "rating": 4.6,
+    "countInStock": 80,
+    "image": "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=600",
+    "description": "Stainless steel body with fine stainless steel nib and Quink ink cartridge."
+  },
+  {
+    "name": "Classmate Pulse 6-Subject Spiral Notebook 300 Pgs",
+    "brand": "Classmate",
+    "category": "Books & Stationery",
+    "price": 175,
+    "rating": 4.6,
+    "countInStock": 200,
+    "image": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600",
+    "description": "Elemental chlorine-free paper with color-coded multi-subject tab dividers."
+  },
+  {
+    "name": "Moleskine Classic Hardcover Ruled Large Journal",
+    "brand": "Moleskine",
+    "category": "Books & Stationery",
+    "price": 1799,
+    "rating": 4.8,
+    "countInStock": 40,
+    "image": "https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?w=600",
+    "description": "Ivory-colored acid-free pages with elastic closure band and expandable back pocket."
+  },
+  {
+    "name": "Rich Dad Poor Dad by Robert T. Kiyosaki",
+    "brand": "Plata",
+    "category": "Books & Stationery",
+    "price": 349,
+    "rating": 4.7,
+    "countInStock": 140,
+    "image": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600",
+    "description": "What the rich teach their kids about money that the poor and middle class do not."
+  },
+  {
+    "name": "Faber-Castell 24 Tri-Grip Erasable Crayon Box",
+    "brand": "Faber-Castell",
+    "category": "Books & Stationery",
+    "price": 160,
+    "rating": 4.5,
+    "countInStock": 110,
+    "image": "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600",
+    "description": "Triangular shape for better grip with clean erasability and vivid pigment."
+  },
+  {
+    "name": "Clean Code: Agile Craftsmanship by Robert Martin",
+    "brand": "Pearson",
+    "category": "Books & Stationery",
+    "price": 699,
+    "rating": 4.9,
+    "countInStock": 55,
+    "image": "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600",
+    "description": "Best practices for writing readable, maintainable, and professional software code."
+  },
+  {
+    "name": "Reynolds 045 Fine Carbide Ball Pen (Pack of 20)",
+    "brand": "Reynolds",
+    "category": "Books & Stationery",
+    "price": 180,
+    "rating": 4.6,
+    "countInStock": 180,
+    "image": "https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=600",
+    "description": "Laser tip 0.45mm ballpoint pen ensuring non-smudge smooth writing flow."
+  },
+  {
+    "name": "Natraj 621 Bold Writing Pencils (Box of 50)",
+    "brand": "Natraj",
+    "category": "Books & Stationery",
+    "price": 240,
+    "rating": 4.6,
+    "countInStock": 160,
+    "image": "https://images.unsplash.com/photo-1576836165612-8bc9b07e7778?w=600",
+    "description": "Dark and smooth lead pencils made with superior bonded lead technology."
+  },
+  {
+    "name": "Thinking, Fast and Slow by Daniel Kahneman",
+    "brand": "Penguin",
+    "category": "Books & Stationery",
+    "price": 450,
+    "rating": 4.7,
+    "countInStock": 75,
+    "image": "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=600",
+    "description": "The landmark book on cognitive biases, judgment, and two systems of thinking."
+  }
+]

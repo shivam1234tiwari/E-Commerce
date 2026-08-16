@@ -1,170 +1,284 @@
+// client/src/pages/AuthPage.jsx
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import API from '../services/api';
-import { ShoppingBag, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, ShieldCheck, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [showOtpScreen, setShowOtpScreen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState('');
-
-  const { login } = useContext(ShopContext);
+  const { setUser } = useContext(ShopContext);
   const navigate = useNavigate();
 
-  const handleAuthSubmit = async (e) => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [step, setStep] = useState('auth'); // 'auth' | 'otp'
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+
+  // Form Fields
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+
+  // Handle Login & Register submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
+    setLoading(true);
+
     try {
       if (isLogin) {
-        const { data } = await API.post('/auth/login', { email, password });
-        login(data, data.token);
-        navigate('/');
+        // 1. Direct Login -> /api/auth/login
+        const { data } = await API.post('/auth/login', { 
+          email: email.trim().toLowerCase(), 
+          password 
+        });
+        localStorage.setItem('userInfo', JSON.stringify(data));
+        setUser(data);
+        navigate(data.isAdmin ? '/admin' : '/');
       } else {
-        await API.post('/auth/register', { name, email, password });
-        setShowOtpScreen(true);
+        // 2. Register & Trigger OTP -> /api/auth/register
+        const { data } = await API.post('/auth/register', { 
+          name, 
+          email: email.trim().toLowerCase(), 
+          password 
+        });
+        setMessage(data.message || 'OTP has been sent to your email!');
+        setStep('otp');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
     }
   };
 
+  // 3. Verify OTP -> /api/auth/verify-otp
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
+
     try {
-      const { data } = await API.post('/auth/verify-otp', { email, otp });
-      login(data, data.token);
-      navigate('/'); // Redirect to Home Page after OTP verification
+      const { data } = await API.post('/auth/verify-otp', { 
+        email: email.trim().toLowerCase(), 
+        otp: otp.trim() 
+      });
+      localStorage.setItem('userInfo', JSON.stringify(data));
+      setUser(data);
+      navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid OTP');
+      setError(err.response?.data?.message || 'Invalid or expired OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 4. Google Auth -> /api/auth/google
+  const handleGoogleAuth = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const { data } = await API.post('/auth/google', {
+        mockUser: {
+          name: 'Google Verified User',
+          email: 'google.user@gmail.com',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300',
+        },
+      });
+
+      localStorage.setItem('userInfo', JSON.stringify(data));
+      setUser(data);
+      navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Google Sign-In failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center p-3 sm:p-6 bg-slate-100 dark:bg-slate-950">
-      <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-200 dark:border-slate-800">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
         
-        {/* Left Side */}
-        <div className="relative hidden md:flex flex-col justify-between p-10 bg-slate-900 text-white overflow-hidden">
-          <img
-            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800"
-            alt="Showcase"
-            className="absolute inset-0 w-full h-full object-cover opacity-40"
-          />
-          <div className="relative z-10 flex items-center gap-2">
-            <ShoppingBag className="w-7 h-7 text-indigo-400" />
-            <span className="text-xl font-black tracking-wider text-indigo-400">SHOPPULSE</span>
+        {/* Header */}
+        <div className="text-center space-y-2 mb-6">
+          <div className="inline-flex p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 mb-1">
+            <Sparkles className="w-6 h-6" />
           </div>
-          <div className="relative z-10 space-y-3">
-            <h3 className="text-2xl font-bold leading-tight">
-              {showOtpScreen ? 'Verify Email' : isLogin ? 'Welcome Back!' : 'Start Your Journey.'}
-            </h3>
-          </div>
-          <div className="relative z-10 text-xs text-slate-400">&copy; SHOPPULSE</div>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
+            {step === 'otp' ? 'Verify OTP' : isLogin ? 'Welcome Back' : 'Create Account'}
+          </h1>
+          <p className="text-xs text-slate-500">
+            {step === 'otp'
+              ? `Enter the 6-digit code sent to ${email}`
+              : isLogin
+              ? 'Enter your credentials to continue shopping'
+              : 'Join ShopPulse for exclusive deals and fastest checkout'}
+          </p>
         </div>
 
-        {/* Right Side */}
-        <div className="p-6 sm:p-12 flex flex-col justify-center">
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-600 text-xs rounded-xl font-semibold">
-              {error}
+        {error && (
+          <div className="p-3.5 mb-4 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100">
+            {error}
+          </div>
+        )}
+        {message && (
+          <div className="p-3.5 mb-4 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-xl border border-emerald-100">
+            {message}
+          </div>
+        )}
+
+        {step === 'auth' ? (
+          <div className="space-y-4">
+            {/* Google Login Button */}
+            <button
+              onClick={handleGoogleAuth}
+              type="button"
+              disabled={loading}
+              className="w-full py-3 px-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center justify-center gap-3 transition cursor-pointer shadow-xs disabled:opacity-50"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+              </svg>
+              Continue with Google
+            </button>
+
+            <div className="flex items-center gap-3 my-4">
+              <div className="grow h-px bg-slate-200 dark:bg-slate-800"></div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">or</span>
+              <div className="grow h-px bg-slate-200 dark:bg-slate-800"></div>
             </div>
-          )}
 
-          {showOtpScreen ? (
-            /* OTP Verification Form */
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
-              <div className="flex items-center gap-2 text-indigo-600">
-                <ShieldCheck className="w-6 h-6" />
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Enter OTP Code</h2>
-              </div>
-              <p className="text-xs text-slate-500">OTP code has been sent to <strong>{email}</strong></p>
-
-              <div>
-                <input
-                  type="text"
-                  maxLength={6}
-                  required
-                  placeholder="Enter 6-Digit OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl p-3 text-center text-lg font-bold tracking-widest"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-sm cursor-pointer"
-              >
-                Verify & Continue to Home
-              </button>
-            </form>
-          ) : (
-            /* Login / Register Form */
-            <form onSubmit={handleAuthSubmit} className="space-y-3">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
-                {isLogin ? 'Sign In' : 'Create an Account'}
-              </h2>
-
+            <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <div>
-                  <label className="block text-xs font-semibold uppercase mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl p-3 text-sm"
-                  />
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      required
+                      placeholder="Your Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                    />
+                  </div>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold uppercase mb-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl p-3 text-sm"
-                />
+                <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="admin@shoppulse.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase mb-1">Password</label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl p-3 text-sm"
-                />
+                <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                  />
+                </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition text-sm mt-2 cursor-pointer"
+                disabled={loading}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition cursor-pointer disabled:opacity-50"
               >
-                {isLogin ? 'Sign In' : 'Send OTP'} <ArrowRight className="w-4 h-4" />
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    {isLogin ? 'Sign In' : 'Continue with Email'} <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
-
-              <div className="mt-4 text-center">
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-xs font-semibold text-indigo-600 hover:underline cursor-pointer"
-                >
-                  {isLogin ? "Don't have an account? Sign up" : 'Already verified? Sign in'}
-                </button>
-              </div>
             </form>
-          )}
-        </div>
+
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setError('');
+                  setMessage('');
+                }}
+                className="text-xs font-bold text-indigo-600 hover:underline cursor-pointer"
+              >
+                {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Sign In'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* OTP Verification Form */
+          <form onSubmit={handleVerifyOtp} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                6-Digit Security OTP
+              </label>
+              <div className="relative">
+                <ShieldCheck className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  maxLength={6}
+                  required
+                  placeholder="Enter 6-digit code"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center tracking-widest text-base font-black outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition cursor-pointer disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Verify & Log In'}
+            </button>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setStep('auth')}
+                className="text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                ← Back to Login
+              </button>
+            </div>
+          </form>
+        )}
 
       </div>
     </div>

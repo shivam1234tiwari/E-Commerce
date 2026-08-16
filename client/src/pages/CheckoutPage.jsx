@@ -1,255 +1,273 @@
-import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// client/src/pages/CheckoutPage.jsx
+import React, { useState, useContext } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
+import API from '../services/api';
 import { formatINR } from '../utils/currency';
-import { CreditCard, QrCode, Landmark, Truck, CheckCircle, ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Truck, CreditCard, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, clearCart } = useContext(ShopContext);
+  const { cart, user, clearCart } = useContext(ShopContext);
   const navigate = useNavigate();
 
-  const [paymentMethod, setPaymentMethod] = useState('upi');
-  const [upiId, setUpiId] = useState('');
-  const [selectedBank, setSelectedBank] = useState('HDFC Bank');
-  const [cardDetails, setCardDetails] = useState({ number: '', expiry: '', cvv: '' });
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [pincode, setPincode] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('Online / UPI');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const [shipping, setShipping] = useState({
-    fullName: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
-  });
+  // Calculations
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const shippingFee = subtotal > 999 || subtotal === 0 ? 0 : 99;
+  const grandTotal = subtotal + shippingFee;
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    clearCart();
-    navigate('/order-success');
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (cart.length === 0) {
+      setError('Your cart is empty');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+
+      const orderData = {
+        orderItems: cart.map((item) => ({
+          product: item._id,
+          name: item.name,
+          image: item.image,
+          price: item.price,
+          qty: item.qty,
+        })),
+        shippingAddress: {
+          address,
+          city,
+          state,
+          pincode,
+        },
+        paymentMethod,
+        totalPrice: grandTotal,
+      };
+
+      // 1. Post order to MongoDB Database
+      await API.post('/orders', orderData);
+
+      // 2. Clear Cart
+      clearCart();
+
+      // 3. Navigate straight to My Orders page where the new order appears
+      navigate('/my-orders');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to place order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Your Cart is Empty</h2>
+        <p className="text-sm text-slate-500 mt-2">Add items to your cart before proceeding to checkout.</p>
+        <Link
+          to="/"
+          className="mt-6 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition"
+        >
+          Return to Shop
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
-      <h1 className="text-2xl font-black text-slate-900 mb-6">Complete Your Order</h1>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <Link
+        to="/cart"
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" /> Back to Cart
+      </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left 2 Columns: Delivery & Payment Details */}
-        <form onSubmit={handlePlaceOrder} className="lg:col-span-2 space-y-6">
-          
-          {/* Shipping Address */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <Truck className="w-5 h-5 text-indigo-600" /> Delivery Address
-            </h2>
+      <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-6">Secure Checkout</h1>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Full Name"
-                required
-                value={shipping.fullName}
-                onChange={(e) => setShipping({ ...shipping, fullName: e.target.value })}
-                className="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
-              <input
-                type="tel"
-                placeholder="Mobile Number (+91)"
-                required
-                value={shipping.phone}
-                onChange={(e) => setShipping({ ...shipping, phone: e.target.value })}
-                className="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 text-red-600 text-xs font-bold rounded-xl border border-red-100">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Shipping & Payment Details */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Shipping Address Section */}
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="flex items-center gap-2 mb-4 text-slate-900 dark:text-white">
+              <Truck className="w-5 h-5 text-indigo-600" />
+              <h2 className="text-base font-bold">1. Delivery Address</h2>
             </div>
 
-            <input
-              type="text"
-              placeholder="Flat / House No. / Building / Street Address"
-              required
-              value={shipping.address}
-              onChange={(e) => setShipping({ ...shipping, address: e.target.value })}
-              className="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            />
-
-            <div className="grid grid-cols-3 gap-4">
-              <input
-                type="text"
-                placeholder="City"
-                required
-                value={shipping.city}
-                onChange={(e) => setShipping({ ...shipping, city: e.target.value })}
-                className="border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
-              <input
-                type="text"
-                placeholder="State"
-                required
-                value={shipping.state}
-                onChange={(e) => setShipping({ ...shipping, state: e.target.value })}
-                className="border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
-              <input
-                type="text"
-                placeholder="Pincode"
-                required
-                value={shipping.pincode}
-                onChange={(e) => setShipping({ ...shipping, pincode: e.target.value })}
-                className="border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
-            </div>
-          </div>
-
-          {/* Payment Method Options */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-indigo-600" /> Choose Payment Option
-            </h2>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { id: 'upi', name: 'UPI / QR', icon: QrCode },
-                { id: 'card', name: 'Card', icon: CreditCard },
-                { id: 'netbanking', name: 'Net Banking', icon: Landmark },
-                { id: 'cod', name: 'Cash on Delivery', icon: Truck },
-              ].map((method) => {
-                const Icon = method.icon;
-                const isSelected = paymentMethod === method.id;
-                return (
-                  <button
-                    type="button"
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={`p-3 rounded-xl border flex flex-col items-center justify-center gap-2 text-xs font-bold transition-all duration-200 cursor-pointer active:scale-95 ${
-                      isSelected
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-600 shadow-xs'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{method.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Dynamic Form Fields Based on Selected Payment */}
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 mt-4">
-              {paymentMethod === 'upi' && (
-                <div className="space-y-3">
-                  <p className="text-xs font-semibold text-slate-700">Google Pay / PhonePe / Paytm UPI ID</p>
-                  <input
-                    type="text"
-                    placeholder="e.g. rahul@upi or mobile@paytm"
-                    required
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  />
-                  <p className="text-[11px] text-slate-500">You will receive a payment request on your UPI App.</p>
-                </div>
-              )}
-
-              {paymentMethod === 'card' && (
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Card Number (Visa / Mastercard / RuPay)"
-                    required
-                    maxLength={16}
-                    value={cardDetails.number}
-                    onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
-                    className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  />
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      placeholder="MM/YY"
-                      required
-                      value={cardDetails.expiry}
-                      onChange={(e) => setCardDetails({ ...cardDetails, expiry: e.target.value })}
-                      className="bg-white border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                    <input
-                      type="password"
-                      placeholder="CVV"
-                      required
-                      maxLength={4}
-                      value={cardDetails.cvv}
-                      onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value })}
-                      className="bg-white border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {paymentMethod === 'netbanking' && (
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-700">Select Your Bank</label>
-                  <select
-                    value={selectedBank}
-                    onChange={(e) => setSelectedBank(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer"
-                  >
-                    <option value="HDFC Bank">HDFC Bank</option>
-                    <option value="State Bank of India">State Bank of India (SBI)</option>
-                    <option value="ICICI Bank">ICICI Bank</option>
-                    <option value="Axis Bank">Axis Bank</option>
-                    <option value="Kotak Mahindra">Kotak Mahindra Bank</option>
-                  </select>
-                </div>
-              )}
-
-              {paymentMethod === 'cod' && (
-                <div className="flex items-center gap-2 text-slate-700 text-xs font-semibold">
-                  <CheckCircle className="w-4 h-4 text-emerald-600" />
-                  <span>Pay with Cash / UPI when your package arrives at your doorstep.</span>
-                </div>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl transition-all duration-200 active:scale-95 shadow-md cursor-pointer text-base mt-2"
-            >
-              Pay & Confirm Order ({formatINR(cartTotal)})
-            </button>
-          </div>
-
-        </form>
-
-        {/* Right Column: Order Summary */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs h-fit space-y-4">
-          <h2 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3">Order Summary</h2>
-
-          <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-            {cart.map((item) => (
-              <div key={item._id} className="flex justify-between items-center text-xs">
-                <div className="flex items-center gap-2 max-w-[70%]">
-                  <img src={item.image} alt={item.name} className="w-10 h-10 object-contain bg-slate-50 rounded-lg p-1 border border-slate-100" />
-                  <span className="font-semibold text-slate-800 line-clamp-1">{item.name} x {item.qty}</span>
-                </div>
-                <span className="font-bold text-slate-900">{formatINR(item.price * item.qty)}</span>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                  Street Address
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="House/Flat No., Building Name, Street Area"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full text-xs sm:text-sm p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-hidden dark:text-white"
+                />
               </div>
-            ))}
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Pune"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="w-full text-xs sm:text-sm p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-hidden dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Maharashtra"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    className="w-full text-xs sm:text-sm p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-hidden dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                    PIN Code
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    placeholder="6-digit PIN"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
+                    className="w-full text-xs sm:text-sm p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-hidden dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="border-t border-slate-100 pt-3 space-y-2 text-xs">
-            <div className="flex justify-between text-slate-600">
-              <span>Subtotal</span>
-              <span>{formatINR(cartTotal)}</span>
+          {/* Payment Method Section */}
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="flex items-center gap-2 mb-4 text-slate-900 dark:text-white">
+              <CreditCard className="w-5 h-5 text-indigo-600" />
+              <h2 className="text-base font-bold">2. Payment Method</h2>
             </div>
-            <div className="flex justify-between text-slate-600">
-              <span>Delivery Fee</span>
-              <span className="text-emerald-600 font-bold">FREE</span>
-            </div>
-            <div className="flex justify-between font-black text-sm text-slate-900 pt-2 border-t border-slate-100">
-              <span>Total Amount</span>
-              <span className="text-indigo-600">{formatINR(cartTotal)}</span>
+
+            <div className="space-y-3">
+              {['Online / UPI / NetBanking', 'Cash on Delivery (COD)'].map((method) => (
+                <label
+                  key={method}
+                  className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition ${
+                    paymentMethod === method
+                      ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/30 font-bold text-indigo-600'
+                      : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <span className="text-xs sm:text-sm">{method}</span>
+                  <input
+                    type="radio"
+                    name="payment"
+                    value={method}
+                    checked={paymentMethod === method}
+                    onChange={() => setPaymentMethod(method)}
+                    className="text-indigo-600 focus:ring-indigo-500"
+                  />
+                </label>
+              ))}
             </div>
           </div>
         </div>
 
-      </div>
-    </main>
+        {/* Right Column: Order Summary */}
+        <div className="lg:col-span-1">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs sticky top-24">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">Order Summary</h3>
+
+            {/* Item Previews */}
+            <div className="max-h-56 overflow-y-auto space-y-3 divide-y divide-slate-100 dark:divide-slate-800 mb-4 pr-1">
+              {cart.map((item) => (
+                <div key={item._id} className="pt-3 first:pt-0 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-3 truncate">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-10 h-10 object-contain rounded-lg bg-slate-50 dark:bg-slate-800 p-1 border border-slate-100 dark:border-slate-700 shrink-0"
+                    />
+                    <div className="truncate">
+                      <p className="font-bold text-slate-800 dark:text-slate-100 truncate">{item.name}</p>
+                      <p className="text-slate-400">Qty: {item.qty}</p>
+                    </div>
+                  </div>
+                  <span className="font-extrabold text-slate-900 dark:text-white shrink-0">
+                    {formatINR(item.price * item.qty)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-4 text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <div className="flex justify-between">
+                <span>Items Subtotal</span>
+                <span>{formatINR(subtotal)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Shipping Fee</span>
+                <span>{shippingFee === 0 ? <strong className="text-emerald-500">FREE</strong> : formatINR(shippingFee)}</span>
+              </div>
+              <div className="flex justify-between text-sm font-black text-slate-900 dark:text-white pt-2 border-t border-slate-100 dark:border-slate-800">
+                <span>Total Payable</span>
+                <span className="text-indigo-600 dark:text-indigo-400">{formatINR(grandTotal)}</span>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-6 w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Processing Order...
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="w-4 h-4" /> Place Order Now
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }
