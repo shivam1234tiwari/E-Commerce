@@ -1,85 +1,106 @@
+// client/src/context/ShopContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const ShopContext = createContext();
 
-export const ShopProvider = ({ children }) => {
-  const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('cart');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
+export const ShopContextProvider = ({ children }) => {
+  const navigate = useNavigate();
+
+  // Load user from localStorage
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem('userInfo');
     return savedUser ? JSON.parse(savedUser) : null;
   });
-  
-  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Load cart from localStorage
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem('cartItems');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
-  const login = (userData, authToken) => {
-    setUser(userData);
-    setToken(authToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', authToken);
+  // Auth Guard Helper
+  const requireAuth = (redirectUrl = '/auth') => {
+    if (!user) {
+      navigate(redirectUrl);
+      return false;
+    }
+    return true;
   };
 
+  // Logout Function
   const logout = () => {
+    localStorage.removeItem('userInfo');
     setUser(null);
-    setToken('');
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    navigate('/auth');
   };
 
-  const addToCart = (product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item._id === product._id);
+  // Add To Cart with Auth Protection
+  const addToCart = (product, quantity = 1) => {
+    if (!requireAuth()) return;
+
+    setCartItems((prevItems) => {
+      const existing = prevItems.find((item) => item._id === product._id);
       if (existing) {
-        return prev.map((item) =>
-          item._id === product._id ? { ...item, qty: item.qty + 1 } : item
+        return prevItems.map((item) =>
+          item._id === product._id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
         );
       }
-      return [...prev, { ...product, qty: 1 }];
+      return [...prevItems, { ...product, quantity }];
     });
-    setIsCartOpen(true);
   };
 
-  const removeFromCart = (id) => {
-    setCart((prev) => prev.filter((item) => item._id !== id));
+  // Direct Buy Now Action
+  const buyNow = (product) => {
+    if (!requireAuth()) return;
+    addToCart(product, 1);
+    navigate('/checkout');
   };
 
-  const updateQty = (id, qty) => {
-    if (qty <= 0) return removeFromCart(id);
-    setCart((prev) =>
-      prev.map((item) => (item._id === id ? { ...item, qty } : item))
+  const removeFromCart = (productId) => {
+    setCartItems((prev) => prev.filter((item) => item._id !== productId));
+  };
+
+  const updateQuantity = (productId, qty) => {
+    if (qty <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+    setCartItems((prev) =>
+      prev.map((item) => (item._id === productId ? { ...item, quantity: qty } : item))
     );
   };
 
-  const clearCart = () => setCart([]);
-
-  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem('cartItems');
+  };
 
   return (
     <ShopContext.Provider
       value={{
-        cart,
-        addToCart,
-        removeFromCart,
-        updateQty,
-        clearCart,
-        cartTotal,
-        token,
         user,
-        login,
+        setUser,
         logout,
-        isCartOpen,
-        setIsCartOpen,
+        requireAuth,
+        cartItems,
+        addToCart,
+        buyNow,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
       }}
     >
       {children}
     </ShopContext.Provider>
   );
 };
+
+export const ShopProvider = ShopContextProvider;
+export default ShopContextProvider;

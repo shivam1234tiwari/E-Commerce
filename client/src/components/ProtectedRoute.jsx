@@ -1,8 +1,14 @@
+// client/src/components/ProtectedRoute.jsx
 import React, { useContext } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute() {
   const { user } = useContext(ShopContext);
-  return user ? children : <Navigate to="/auth" replace />;
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <Outlet />;
 }
